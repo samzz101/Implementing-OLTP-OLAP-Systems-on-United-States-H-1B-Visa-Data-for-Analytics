@@ -1,5 +1,4 @@
-<<<<<<< HEAD
-# Implementing OLTP, OLAP Systems on United States H-1B Visa Data for Operational Usage and Analytics
+# Implementing OLTP, OLAP Systems on United States H-1B Visa Data for Analytics
 
 ## Introduction
 Online Transactional Processing (OLTP) systems, which function as operational data stores (ODS), facilitate real-time data processing. On the other hand, Online Analytical Processing (OLAP) systems are used for analytical purposes and provide insights based on aggregated data. Implementing these systems with H-1B visa data enables efficient access and analysis of data from ODS and performs in-depth analysis on a data warehouse (DWH).
@@ -17,7 +16,7 @@ An Entity Relationship (ER) model was developed by gathering the necessary data 
 ## Overview and Architecture
 The goal of this project is to implement Online Transactional Processing (OLTP) and Online Analytical Processing (OLAP) systems on the cloud, with the entire process automated in a single data pipeline or workflow. After evaluating various cloud service providers, Amazon Web Services (AWS) was selected for its competitive pricing and flexible services. The data for this project was extracted from the U.S. Citizenship and Immigration Services (USCIS) in CSV format. This raw data, which consists of 154 columns, is unnormalized and requires preprocessing to prepare it for analysis.
 
-<img width="820" alt="Screenshot 2024-08-07 at 9 08 11 PM" src="https://github.com/user-attachments/assets/7dca0a89-b4d9-4ac7-bc8e-98aba71a311f">
+<img width="819" alt="Screenshot 2024-08-08 at 12 46 51 PM" src="https://github.com/user-attachments/assets/b083ca03-ed5f-4290-b308-1343615091d5">
 
 Post-normalization of the data, the CSV files will be migrated to Amazon Simple Storage Service (S3), located in the US East (N. Virginia) region (us-east-1). S3 provides scalable object storage services through a web service interface, ensuring reliable and cost-effective data storage. The cloud SQL MySQL instance, functioning as the OLTP system, will be located in the us-east-1b availability zone. Identity and Access Management (IAM) roles, users, and groups will be created to manage access to the Relational Database Service (RDS). The instance will be configured with a Virtual Private Cloud (VPC) to monitor and filter incoming and outgoing traffic, allowing access only to authorized users. The MySQL instance will also have a backup policy in place to safeguard against unexpected data loss.
 ETL (Extract, Transform, Load) scripts will be developed using Python and orchestrated through AWS Glue Jobs. AWS Glue is a serverless data integration service based on the Apache Spark Structured Streaming engine. This setup will handle the extraction of data from the MySQL instance, its transformation, and loading into the data warehouse (DWH). Once the data is in the data warehouse, analysis will be performed, and SQL views will be created for reporting purposes. These views will facilitate the generation of visual reports based on the analyzed data, providing actionable insights and facilitating data-driven decision-making.
@@ -25,15 +24,16 @@ ETL (Extract, Transform, Load) scripts will be developed using Python and orches
 ## Project Flow
 An on-demand AWS Glue workflow has been designed to automate the creation and maintenance of OLTP and OLAP systems. The workflow begins with jobs that set up the tables in the MySQL database, ensuring that the schema adheres to the defined constraints. Once the tables are created, data from CSV files stored in Amazon S3 is loaded into these tables, populating the MySQL instance with the necessary raw data. The next stage involves the ETL process, where data is extracted from the newly populated MySQL tables and loaded into a Pandas DataFrame for preprocessing. This data is then transformed and ingested into Snowflake, which serves as the data warehouse for OLAP operations. Finally, the Tableau data source is refreshed to reflect the updated data, showcasing the latest insights on dashboards. This workflow efficiently manages the end-to-end data processing, from initial ingestion to real-time visualization, ensuring accurate and timely reporting.
 
-<img width="1194" alt="Screenshot 2024-08-07 at 9 09 14 PM" src="https://github.com/user-attachments/assets/550989ed-08b0-4915-a03a-a2950e745f01">
+<img width="1195" alt="Screenshot 2024-08-08 at 12 49 07 PM" src="https://github.com/user-attachments/assets/67df83e3-9302-4789-a13f-7bfb256a5a84">
 
 ## Database Implementation
 Data is collected from various sources such as Kaggle, the US Department of Labor website, and other sources which contain a total of 64 columns. Multiple data cleaning procedures are performed on the data, including elimination of special characters, transformation of incomplete data into meaningful values, transformation of incorrectly formatted data, and formatting the inconsistent data to make data more meaningful. After the data cleaning process, data is normalized into 8 tables and data is modeled into a relational schema.
 
-<img width="991" alt="Screenshot 2024-08-07 at 9 11 44 PM" src="https://github.com/user-attachments/assets/a4c6646c-d090-4705-bb93-53075d684365">
+<img width="981" alt="Screenshot 2024-08-08 at 12 50 26 PM" src="https://github.com/user-attachments/assets/6d8304dd-e39e-4438-bbab-b6c3ec886f04">
 
 ## About the Data
-The US H1-B Visa data is collected from various sources to make the data more meaningful and comprehensive. It is open-source data from the US Department of Labor that maintains the work-related Visa. It provides information on applications they receive every year for an H1-B visa and related information about employers and applicants. Postal code data has been taken from the USPS official website to populate the postal code, city, and state data of the applicant, employer, and job-related information in the above H1-B visa application data. The above data provides information on applications that are approved, denied, or withdrawn for H1-B visas for the year 2022. This data includes the information of the applicant, employer, job of the applicant, prevailing wage, and status of the application. This dataset contains more than 70,000 applications and their related information. Some of the important attributes in the data set are:
+The US H1-B Visa data is collected from various sources to make the data more meaningful and comprehensive. It is open-source data from the US Department of Labor that maintains the work-related Visa. It provides information on applications they receive every year for an H1-B visa and related information about employers and applicants. Postal code data has been taken from the USPS official website to populate the postal code, city, and state data of the applicant, employer, and job-related information in the above H1-B visa application data. The above data provides information on applications that are approved, denied, or withdrawn for H1-B visas for the year 2022. This data includes the information of the applicant, employer, job of the applicant, prevailing wage, and status of the application. This dataset contains more than 70,000 applications and their related information. Some of the important attributes in the data set are: 
+
 * Application case Number
 * Case Received date
 * Case Status
@@ -61,18 +61,30 @@ The Python script developed for the ETL process utilizes modularization to ensur
 ## Datawarehouse Implementation
 Upon successful completion of the ETL process, the data is loaded into the Snowflake cloud data platform, which acts as the data warehouse for the H-1B visa dataset. Snowflake is a powerful data warehousing system renowned for its large-scale data management capabilities. It offers cross-cloud deployment, high scalability, and robust security features. The data is ingested into Snowflake according to the defined data model. For this project, a STAR schema model is implemented in the data warehouse: the Application table serves as the fact table, while Geography, Prevailing Wage, Education Info, and Agent tables function as dimension tables. This schema design supports efficient querying and analysis of the H-1B visa data by organizing it into a structured format that enhances performance and scalability.
 
-<img width="452" alt="Screenshot 2024-08-07 at 9 10 19 PM" src="https://github.com/user-attachments/assets/b8dbee60-df90-4fdf-8460-5e5d6e429557">
+<img width="523" alt="Screenshot 2024-08-08 at 12 51 30 PM" src="https://github.com/user-attachments/assets/0162d61b-99f0-4142-87f3-9132b0874345">
 
 ## Data Analysis
 After inserting data into the snowflake, using SQL we queried the data for the required analysis.
 ### Top 10 Countries of the Applicants
-
+<img width="821" alt="Screenshot 2024-08-08 at 12 53 39 PM" src="https://github.com/user-attachments/assets/39b7a818-79b5-4a8b-a2e0-913f9db6ad79">
 
 ### Popular Education Background for the Applicants
-
+<img width="812" alt="Screenshot 2024-08-08 at 12 53 57 PM" src="https://github.com/user-attachments/assets/1f1a4bd0-0506-4395-9a3e-ea39ef2f8bec">
 
 ### Top 10 Employers that are Filing the H1-B Applications
+<img width="799" alt="Screenshot 2024-08-08 at 12 54 14 PM" src="https://github.com/user-attachments/assets/e5742d1f-7eaa-4c8c-b188-3e26d45339f1">
 
-=======
->>>>>>> 7200e93 (Update README.md)
+### Top 10 Employers that have Highest H1-B Approvals
+<img width="809" alt="Screenshot 2024-08-08 at 12 54 32 PM" src="https://github.com/user-attachments/assets/4246ac99-3737-48f2-8609-8eb6e3d70f9d">
 
+### State Distributions for all the Applications
+<img width="808" alt="Screenshot 2024-08-08 at 12 54 51 PM" src="https://github.com/user-attachments/assets/c0359a3d-7c23-458f-b00a-6e50ff69a9b8">
+
+### Average Wage for the Applicants Accross Various Job Titles
+<img width="801" alt="Screenshot 2024-08-08 at 12 55 16 PM" src="https://github.com/user-attachments/assets/36565c37-ef9b-4b56-91b9-6f7c726e157f">
+
+## Future Work
+The ETL pipeline is fully automated, allowing for continuous processing regardless of future data inflows. Adjustments to parameters in the data warehouse will enable the system to append data for upcoming fiscal quarters seamlessly. Additionally, while the current analysis focuses solely on H-1B visas, there is potential to extend the analysis to include other visa types, providing a more comprehensive view of immigration trends.
+
+## Limitations
+The dataset has notable limitations. Applications may be filed by individuals or agents, and when filed by individuals, agent details are null, potentially skewing data completeness. Although null values are handled, they may not fully represent the real-world scenario. The dataset also reflects a higher approval rate compared to rejections or withdrawals, which diverges from the actual approval percentage observed in real-life H-1B processes. Moreover, the data collected from sources contains fewer denials than typically encountered, which may not accurately represent the true distribution of application outcomes.
