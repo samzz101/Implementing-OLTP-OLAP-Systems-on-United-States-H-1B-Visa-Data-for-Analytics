@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Implementing OLTP, OLAP Systems on United States H-1B Visa Data for Operational Usage and Analytics
 
 ## Introduction
@@ -72,4 +73,6 @@ After inserting data into the snowflake, using SQL we queried the data for the r
 
 ### Top 10 Employers that are Filing the H1-B Applications
 
+=======
+>>>>>>> 7200e93 (Update README.md)
 
