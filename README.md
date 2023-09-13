@@ -72,3 +72,4 @@ After inserting data into the snowflake, using SQL we queried the data for the r
 
 ### Top 10 Employers that are Filing the H1-B Applications
 
+
