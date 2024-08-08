@@ -65,10 +65,26 @@ Upon successful completion of the ETL process, the data is loaded into the Snowf
 ## Data Analysis
 After inserting data into the snowflake, using SQL we queried the data for the required analysis.
 ### Top 10 Countries of the Applicants
-
+<img width="811" alt="Screenshot 2024-08-08 at 8 18 13 AM" src="https://github.com/user-attachments/assets/63afd790-34ee-414b-b09a-bbc08a0c5ad9">
 
 ### Popular Education Background for the Applicants
-
+<img width="816" alt="Screenshot 2024-08-08 at 8 18 40 AM" src="https://github.com/user-attachments/assets/3d44f898-f398-41c9-9823-1a7fb6c29efc">
 
 ### Top 10 Employers that are Filing the H1-B Applications
+<img width="773" alt="Screenshot 2024-08-08 at 8 19 26 AM" src="https://github.com/user-attachments/assets/cb7807e8-ce2c-4a5e-95c2-74d1717394ea">
+
+### Top 10 Employers that have Highest H1 Approvals
+<img width="808" alt="Screenshot 2024-08-08 at 8 19 47 AM" src="https://github.com/user-attachments/assets/441af5dc-d684-4758-858b-342b391a3e4a">
+
+### State Distributions for all the Applications
+<img width="800" alt="Screenshot 2024-08-08 at 8 20 06 AM" src="https://github.com/user-attachments/assets/3e9ee6b8-8118-4862-8eac-bf1e817d26cc">
+
+### Average Wage of the Applicants Accross Various Job Titles
+<img width="785" alt="Screenshot 2024-08-08 at 8 20 25 AM" src="https://github.com/user-attachments/assets/8673ac51-b5a8-481f-91a7-1c9abf7800ad">
+
+## Future Work
+The ETL pipeline is fully automated, allowing for continuous processing regardless of future data inflows. Adjustments to parameters in the data warehouse will enable the system to append data for upcoming fiscal quarters seamlessly. Additionally, while the current analysis focuses solely on H-1B visas, there is potential to extend the analysis to include other visa types, providing a more comprehensive view of immigration trends.
+
+## Limitations
+The dataset has notable limitations. Applications may be filed by individuals or agents, and when filed by individuals, agent details are null, potentially skewing data completeness. Although null values are handled, they may not fully represent the real-world scenario. The dataset also reflects a higher approval rate compared to rejections or withdrawals, which diverges from the actual approval percentage observed in real-life H-1B processes. Moreover, the data collected from sources contains fewer denials than typically encountered, which may not accurately represent the true distribution of application outcomes.
 
