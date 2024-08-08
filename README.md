@@ -1,153 +1,74 @@
-# USAH1BAnalysis
+# Implementing OLTP, OLAP Systems on United States H-1B Visa Data for Operational Usage and Analytics
 
-# Implementing OLTP, OLAP systems on United States H-1B visa data for operational usage and analytics
+## Introduction
+Online Transactional Processing (OLTP) systems, which function as operational data stores (ODS), facilitate real-time data processing. On the other hand, Online Analytical Processing (OLAP) systems are used for analytical purposes and provide insights based on aggregated data. Implementing these systems with H-1B visa data enables efficient access and analysis of data from ODS and performs in-depth analysis on a data warehouse (DWH).
+The H-1B visa is a nonimmigrant work visa that permits U.S. employers to hire foreign workers for specialty occupations requiring at least a bachelor's degree or equivalent. Foreign professionals with specialized skills and education often apply for H-1B visas. By leveraging the H-1B visa data, it is possible to perform analysis and create dashboards to understand various educational and geographical factors of the applicants.
+An Entity Relationship (ER) model was developed by gathering the necessary data points from U.S. Citizenship and Immigration Services (USCIS). This ER diagram was used to construct the OLTP database within a cloud MySQL instance. Data from the MySQL database was then extracted and transformed using Python and loaded into a data warehouse. Analytics were performed on the data warehouse, with the results represented through a dashboard. This approach provided valuable insights into the characteristics and trends within the H-1B visa application data, facilitating a better understanding of the educational and geographical backgrounds of applicants.
 
-# Introduction
-Online Transactional Processing (OLTP) systems which are operational data stores (ODS), will help in processing the data in real time. Online Analytical Processing (OLAP) systems are informational and used for analysis. Implementing these systems on H-1B visa data will help in accessing data from ODS by the users and performing analysis on DWH. H-1B visa is a nonimmigrant work visa that allows U.S. employers to hire foreign workers for specialty jobs that require a bachelor's degree or equivalent. Highly educated foreign professionals apply for USA H-1B visas. With the data, we perform analysis and create dashboards that will help us understand various educational and geographical factors of an applicant. An Entity Relationship (ER) model is created by collecting the required data points from U.S. Citizenship and Immigration Services (USCIS). We have used the ER diagram to develop the OLTP database in the cloud MySQL instance. Data in MySQL is extracted and transformed using python and is loaded to a data warehouse. Analytics is performed on top of the data warehouse with data represented using a dashboard.
+## Goals and Motivation
+1. The goal and motivation of this analysis are to provide comprehensive insights into various aspects of H-1B visa data. The specific objectives are:
+2. Top 10 Applicant Countries: Identify and rank the top 10 countries from which H-1B visa applicants originate.
+3. Popular Education Background: Analyze the educational backgrounds of all applicants to determine the most common qualifications and fields of study among H-1B visa holders.
+4. Major Employers: Determine the employers with the highest number of H-1B visa applications and approvals.
+5. State-Wise Application Distribution: Examine the distribution of H-1B visa applications across different states in the United States.
+6. Average Wage by Job Title: Calculate the average wage for H-1B visa applicants across different job titles to understand compensation trends.
 
-# Goals and Motivations
-1. The goal and motivation are to present the analysis for the following.
-2. Top 10 applicant countries.
-3. Popular education background from all the applicants.
-4. Major employers with the highest applications and decisions.
-5. State-wise distributions of application for the United States.
-6. The average wage for the applicants across job titles.
-7. Distribution of foreign workers across the economic sector.
-8. Distribution of applications across prevailing wage.
-9. Total applications for the Fiscal year.
-10. Distribution of wages across the educational qualifications.
-11. The average wage of the state across roles.
+## Overview and Architecture
+The goal of this project is to implement Online Transactional Processing (OLTP) and Online Analytical Processing (OLAP) systems on the cloud, with the entire process automated in a single data pipeline or workflow. After evaluating various cloud service providers, Amazon Web Services (AWS) was selected for its competitive pricing and flexible services. The data for this project was extracted from the U.S. Citizenship and Immigration Services (USCIS) in CSV format. This raw data, which consists of 154 columns, is unnormalized and requires preprocessing to prepare it for analysis.
 
-# Overview and Architecture
-The goal is to implement OLTP and OLAP systems on the cloud, with the entire process automated in a single data pipeline/ workflow. After exploring services offered by various cloud service providers, we have decided to develop the project on Amazon Web Services (AWS), a top CSP famous for its pricing methodology and various flexible services. We have extracted the data from USCIS in CSV format. Data available from USCIS is raw data that has 154 columns and is unnormalized.
+<img width="820" alt="Screenshot 2024-08-07 at 9 08 11 PM" src="https://github.com/user-attachments/assets/7dca0a89-b4d9-4ac7-bc8e-98aba71a311f">
 
-![Archirechture!](https://github.com/ramakrishnapoluru/USAH1BAnalysis/assets/119472036/2dd68000-373e-45ae-b63c-7bc56d51be8a)
+Post-normalization of the data, the CSV files will be migrated to Amazon Simple Storage Service (S3), located in the US East (N. Virginia) region (us-east-1). S3 provides scalable object storage services through a web service interface, ensuring reliable and cost-effective data storage. The cloud SQL MySQL instance, functioning as the OLTP system, will be located in the us-east-1b availability zone. Identity and Access Management (IAM) roles, users, and groups will be created to manage access to the Relational Database Service (RDS). The instance will be configured with a Virtual Private Cloud (VPC) to monitor and filter incoming and outgoing traffic, allowing access only to authorized users. The MySQL instance will also have a backup policy in place to safeguard against unexpected data loss.
+ETL (Extract, Transform, Load) scripts will be developed using Python and orchestrated through AWS Glue Jobs. AWS Glue is a serverless data integration service based on the Apache Spark Structured Streaming engine. This setup will handle the extraction of data from the MySQL instance, its transformation, and loading into the data warehouse (DWH). Once the data is in the data warehouse, analysis will be performed, and SQL views will be created for reporting purposes. These views will facilitate the generation of visual reports based on the analyzed data, providing actionable insights and facilitating data-driven decision-making.
 
-Post normalization of the data, CSV's will be migrated to the Amazon Simple Storage Service (S3) (located - US East (N. Virginia) us-east-1), which is scalable infrastructure storage and provides object storage services through a web service interface. Then we have our cloud SQL MySQL instance - OLTP (located - us-east-1b), Identity and Access Management (IAM) roles created along with the users and groups to access the Relational Database service. The instance is configured with VPC that will monitor and filter an instance's incoming and outgoing traffic with only authorized users accessing it. The backup policy of MySQL instance will help us in unexpected circumstances. ETL scripts are developed in python and orchestrated using AWS glue job, a serverless data integration service built on Apache Spark Structured Streaming engine. Using the ETL process, data is extracted from the MySQL instance and is transformed, and loaded into the data warehouse (DWH) entire ETL setup is performed using python. With the data in the warehouse, analysis is performed and views are created for the data reporting using SQL. Views are used to report the analysis in the form of visuals.
+## Project Flow
+An on-demand AWS Glue workflow has been designed to automate the creation and maintenance of OLTP and OLAP systems. The workflow begins with jobs that set up the tables in the MySQL database, ensuring that the schema adheres to the defined constraints. Once the tables are created, data from CSV files stored in Amazon S3 is loaded into these tables, populating the MySQL instance with the necessary raw data. The next stage involves the ETL process, where data is extracted from the newly populated MySQL tables and loaded into a Pandas DataFrame for preprocessing. This data is then transformed and ingested into Snowflake, which serves as the data warehouse for OLAP operations. Finally, the Tableau data source is refreshed to reflect the updated data, showcasing the latest insights on dashboards. This workflow efficiently manages the end-to-end data processing, from initial ingestion to real-time visualization, ensuring accurate and timely reporting.
 
-# Project Flow
+<img width="1194" alt="Screenshot 2024-08-07 at 9 09 14 PM" src="https://github.com/user-attachments/assets/550989ed-08b0-4915-a03a-a2950e745f01">
 
-An on-demand AWS glue workflow is designed for OLTP and OLAP systems creation and maintenance. The workflow starts with jobs that will create the tables in the MySQL database, post the data available in the CSV files in S3 are loaded into the tables. Once all the tables are created by following all the constraints, the next job runs which consists of the ETL process, data is extracted from the newly populated tables that are in the MySQL instance and data is loaded into the panda's data frame for data preprocessing, and data is ingested into snowflake using dependency libraries. Post ETL tableau data source is refreshed showcasing the updated data on dashboards.
+## Database Implementation
+Data is collected from various sources such as Kaggle, the US Department of Labor website, and other sources which contain a total of 64 columns. Multiple data cleaning procedures are performed on the data, including elimination of special characters, transformation of incomplete data into meaningful values, transformation of incorrectly formatted data, and formatting the inconsistent data to make data more meaningful. After the data cleaning process, data is normalized into 8 tables and data is modeled into a relational schema.
 
-![ProjectFlow!](https://github.com/ramakrishnapoluru/USAH1BAnalysis/assets/119472036/c3ddac75-33f9-46e4-a0a0-4594a8bca7fa)
+<img width="991" alt="Screenshot 2024-08-07 at 9 11 44 PM" src="https://github.com/user-attachments/assets/a4c6646c-d090-4705-bb93-53075d684365">
 
-# Database Implementation
-Data is collected from various sources such as Kaggle, the US Department of Labor website, and other sources which contain a total of 64 columns. Multiple data cleaning procedures are performed on the data, including elimination of special characters, transformation of incomplete data into meaningful values, transformation of incorrectly formatted data, and formatting the inconsistent data to make data more meaningful. After the data cleaning process, data is normalized into 8 tables and data is modeled into a relational schema. Following is the entity relationship diagram for the relational schema:
-
-![ProjectFlow!](https://github.com/ramakrishnapoluru/USAH1BAnalysis/assets/119472036/7ea3ccbc-8c68-49c9-af1e-013b4bee3c27)
-
-# About the Data
+## About the Data
 The US H1-B Visa data is collected from various sources to make the data more meaningful and comprehensive. It is open-source data from the US Department of Labor that maintains the work-related Visa. It provides information on applications they receive every year for an H1-B visa and related information about employers and applicants. Postal code data has been taken from the USPS official website to populate the postal code, city, and state data of the applicant, employer, and job-related information in the above H1-B visa application data. The above data provides information on applications that are approved, denied, or withdrawn for H1-B visas for the year 2022. This data includes the information of the applicant, employer, job of the applicant, prevailing wage, and status of the application. This dataset contains more than 70,000 applications and their related information. Some of the important attributes in the data set are:
-
-1. Application case Number
-2. Case Received date
-3. Case Status
-4. Case Decision Date
-5. Applicant Citizenship
-6. Employer Name
-7. Applicant Education
-8. Job information
-9. Job work place
-10. Job Title
-11. Prevailing wage
-12. Prevailing wage job title
-
+* Application case Number
+* Case Received date
+* Case Status
+* Case Decision Date
+* Applicant Citizenship
+* Employer Name
+* Applicant Education
+* Job information
+* Job work place
+* Job Title
+* Prevailing wage
+* Prevailing wage job title
 Some of the important relationships between various attributes are as follows:
-
-1. Applicant details are provided in the application.
-2. Employers that are filing on behalf of the applicant.
-3. Applications filed by the third party agents for the applicants.
-4. Nationalities of the applicants.
-5. Job roles of the applicants that are applying.
+* Applicant details are provided in the application.
+* Employers that are filing on behalf of the applicant.
+* Applications filed by the third party agents for the applicants.
+* Nationalities of the applicants.
+* Job roles of the applicants that are applying.
 
 The data set is normalized to satisfy 1NF, 2NF, and 3NF by splitting the data into 8 tables by following all the required constraints. The Application table contains the majority of the information about the H1-B visa data and the information of Agent, Employer, Applicant, Job Information, and Prevailing Wage information is separated and referenced to the Application table. A geography table has been created to match the correct postal codes with the data which is referenced to Employer, Applicant, and Job information tables. Education information contains the data related to the education of the applicant and the Education qualification required for the job.
+## ETL Process
+The ETL (Extract, Transform, Load) process is implemented using Python and orchestrated through AWS Glue jobs. During the extraction phase, data is retrieved from the cloud MySQL instance using secure access keys, which are stored in a .py file within an S3 bucket to prevent exposure of sensitive information. The connection to MySQL is established through the access details read from the file, and data is extracted into a DataFrame using the read_sql function before closing the connection. In the transformation phase, the data in the DataFrame undergoes several modifications, including renaming columns, handling null values, removing unnecessary columns, and correcting revenue field values. String formatting is applied to text columns, and a "Refreshed Date" column is added to each table to record the upload timestamp. Finally, in the loading phase, the transformed data is transferred to the Snowflake database using Python-based DB connectivity. Similar to the MySQL access details, Snowflake credentials are securely managed by storing them in a .py file. Once the connection to Snowflake is established, the cleaned DataFrame is loaded into the database tables, completing the ETL process.
+### Logging and Exception Handling
+The Python script developed for the ETL process utilizes modularization to ensure a structured and maintainable codebase. Each step of the process—connection to S3, MySQL, and Snowflake—is implemented with robust exception handling. This approach ensures that the script is resilient to errors and failures. If any issues arise during the connections or data processing, the exception handling mechanisms capture and display error messages, allowing for prompt identification and troubleshooting of problems without causing the entire code to break. This systematic approach to logging and exception handling enhances the reliability and stability of the ETL workflow.
+## Datawarehouse Implementation
+Upon successful completion of the ETL process, the data is loaded into the Snowflake cloud data platform, which acts as the data warehouse for the H-1B visa dataset. Snowflake is a powerful data warehousing system renowned for its large-scale data management capabilities. It offers cross-cloud deployment, high scalability, and robust security features. The data is ingested into Snowflake according to the defined data model. For this project, a STAR schema model is implemented in the data warehouse: the Application table serves as the fact table, while Geography, Prevailing Wage, Education Info, and Agent tables function as dimension tables. This schema design supports efficient querying and analysis of the H-1B visa data by organizing it into a structured format that enhances performance and scalability.
 
-# ETL Process
-Extract, Transform, and Load is implemented using python and orchestrated using AWS Glue job.
-# Extraction
-Data is extracted from Cloud MySQL instance using access keys, access keys are not exposed publicly or exposed in code as they could breakout secrets and give a chance of stealing keys. The secrets/ access keys are stored in a .py file and the file is uploaded to the S3 bucket. The data is read from the file in the S3 bucket and the connection to the MySQL instance is made. Post connection the data is extracted and saved into a data frame using the read_sql function and the connection is closed immediately once the data is read.
-# Transform
-Once the data is loaded from the cloud MySQL instance to the data frame data transformations such as renaming columns, handling nulls, removing unwanted columns, and removing, the revenue field values are carried out. Handling string formatting for the str-type columns has been handled. Added Refreshed Date column on every table which consists of the uploading timestamp.
-# Load
-Data is loaded from the data frame to the snowflake database using DB connectivity through python. Access credentials to snowflake are also not exposed similar to the MySQL instance. Access details are stored in a .py file and data is read from the file and a connection is made once the connection is successfully created the data frame post-data pre-processing is dumped into tables.
+<img width="452" alt="Screenshot 2024-08-07 at 9 10 19 PM" src="https://github.com/user-attachments/assets/b8dbee60-df90-4fdf-8460-5e5d6e429557">
 
-# Logging and Exception Handling
-Python script that was developed uses modularization. In the development of python code, each step of connection to S3, MySQL, and Snowflake is implemented with exception Handling, so that the code doesn't break, and the errors will be showcased.
+## Data Analysis
+After inserting data into the snowflake, using SQL we queried the data for the required analysis.
+### Top 10 Countries of the Applicants
 
-# Data warehouse Implementation
-Following the successful completion of the ETL process, the data is loaded into the Snowflake cloud data platform, which will serve as the data warehouse for the H1-B visa data. Snowflake cloud service is one of the most powerful data warehousing systems for huge-scale data. It supports cross-cloud deployment capabilities, is highly scalable, and secure, and has many more properties. The data will be ingested in compliance with the defined data model. We built a data warehouse for this project using the STAR schema model in which the application is the fact table and geography, prevailing wage, education info, and agent are dimension tables.
 
-![ProjectFlow!](https://github.com/ramakrishnapoluru/USAH1BAnalysis/assets/119472036/056795e2-7cf1-4a37-bc76-1018af08150a)
+### Popular Education Background for the Applicants
 
-# Data Analysis
 
-After inserting data into the snowflake, using SQL we queried the data for the required analysis. Following is the analysis was done on the data:
-
-# Top 10 Countries of the applicants
-
-![ProjectFlow!](https://github.com/ramakrishnapoluru/USAH1BAnalysis/assets/119472036/cb17ad49-aba0-43a5-b57e-cbf307705937)
-
-# Popular Education background for the applicants
-
-![ProjectFlow!](https://github.com/ramakrishnapoluru/USAH1BAnalysis/assets/119472036/4e57ab91-b0b7-434d-9763-c29a76a4b6b0)
-
-# Top 10 Employers that are filing the H1-B applications.
-
-![ProjectFlow!](https://github.com/ramakrishnapoluru/USAH1BAnalysis/assets/119472036/c48ee7a0-80dd-44b0-91ac-a9d72c73df64)
-
-# Top 10 employers that have highest H1 approvals
-
-![ProjectFlow!](https://github.com/ramakrishnapoluru/USAH1BAnalysis/assets/119472036/0d930234-bd1e-4370-9b61-c901e2f1bdc0)
-
-# State Distributions for all the applications
-
-![ProjectFlow!](https://github.com/ramakrishnapoluru/USAH1BAnalysis/assets/119472036/12352bc3-6566-4257-91f9-77cdfade5a2f)
-
-# Average wage for the applicants accross various job titles
-
-![ProjectFlow!](https://github.com/ramakrishnapoluru/USAH1BAnalysis/assets/119472036/2e1bc9b9-bcde-487f-9915-bb6d53dc08dc)
-
-# States and the maximum applications for each job title
-
-![ProjectFlow!](https://github.com/ramakrishnapoluru/USAH1BAnalysis/assets/119472036/1005984a-ff30-4ac3-82c4-93da9fa71ee7)
-
-# Data Visualization
-
-![ProjectFlow!](https://github.com/ramakrishnapoluru/USAH1BAnalysis/assets/119472036/85421c66-ea1e-4432-975e-176de8a3cb31)
-
-# Conclusions
-
-1. From the above H1-B data analysis, applicants from India are the majority of immigrants that have applied and got approved for the H1-B visa.
-2. Applicants that are having their majors in Engineering such as "Computer Science", "Computer Engineering" and "Business Administration" have the most applications.
-3. Top IT giants like Cognizant, Google, Microsoft, and Apple are top companies that file for H1-B visas for their employees from various countries with a combined percentage of more than 30%.
-4. The majority of the applicants are from California state and are working in the role of "Software Engineer" with a total number of count as 2,006.
-5. The average salary for the applicants with approved visa status is $112,350 and the highest average salary is for the applicants from California state.
-6. Out of all the applications, 95.01% of applicants got an H1-B visa, 1.45% of applicants were denied the visa and 3.54% of applicants had withdrawn their applications.
-
-# Lessons Learned
-
-1. Understood how AWS glue and workflow work.
-2. Worked with a snowflake which is a very popular data ware house and can also be integrated with most of the CSPs.
-3. Performed normalization which is a good hands-on experience.
-4. Learned about data modeling and star schema creation.
-5. Implemented ETL using python.
-6. All the technologies and tools used in the project are new to the group. Making sure to choose the correct architecture for the project helped us with a lot of research.
-7. Learned how we can create visualizations with tableau.
-
-# Technical Difficulty
-
-1. The data we collected had a lot of missing and inconsistent values which had to be transformed into clean data.
-2. We wanted to go with AWS which was new to the whole group so setting up architecture and understand it took a lot of effort.
-3. There are many null values in columns that we have considered.
-4. We did not want to share access keys in the code so worked on a way how we can find a way to provide access through files.
-5. Inserting the data into databases and data warehouses took effort as the data has some issues while developing.
-
-# Future Work
-
-The entire set is automated and the on-demand pipeline will just perform the entire process no matter even if data for future fiscal years flow in. We can adjust the parameter in the warehouse and data for the future fiscal quarter will get appended to the data warehouse tables. Currently, the analysis is only one type of visa but we can include many types and perform analysis.
-
-# Limitations:
-
-The H1-B visa applications can be filled out by individuals and agents if the application is filled out by individuals the agent details will be null. Most of the fields consist of Null data, even though we handle the null it doesn't give us the true story. Considering the real-life scenario of the H1-B process, the approval percentage is much lesser than what was analyzed above as the data set has most approvals than rejections or withdrawals. The data collected from sources has a very less number of denials which is different from real-world scenarios.
-
+### Top 10 Employers that are Filing the H1-B Applications
 
